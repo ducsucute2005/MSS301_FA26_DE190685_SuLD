@@ -8,7 +8,7 @@ import org.testcontainers.utility.DockerImageName;
 
 @TestConfiguration(proxyBeanMethods = false)
 class TestcontainersConfiguration {
-
+//test config
 	@Bean
 	@ServiceConnection
 	MongoDBContainer mongoDbContainer() {
