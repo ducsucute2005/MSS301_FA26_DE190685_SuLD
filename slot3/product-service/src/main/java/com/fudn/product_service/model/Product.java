@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Document("product")
 public class Product {
-
+//model
     @Id
     private String id;
     private String name;
