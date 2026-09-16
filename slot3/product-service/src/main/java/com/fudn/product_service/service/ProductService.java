@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+//service
 public class ProductService {
 
     private final ProductRepository productRepository;
