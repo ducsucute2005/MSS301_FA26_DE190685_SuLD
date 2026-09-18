@@ -55,7 +55,7 @@ public class ProductService {
                 updatedProduct.getDescription(), updatedProduct.getPrice());
     }
 
-   
+
     public void deleteProduct(String id) {
         if (!productRepository.existsById(id)) {
             throw new ProductNotFoundException(id);
