@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+//model
 public class Order {
 
     @Id
