@@ -12,7 +12,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
-/** Ky JWT HS256. Gateway dung CUNG secret de verify. */
 @Service
 public class JwtService {
 
