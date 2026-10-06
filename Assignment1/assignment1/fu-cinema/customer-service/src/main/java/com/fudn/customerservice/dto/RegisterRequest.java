@@ -4,6 +4,7 @@ import jakarta.validation.constraints.*;
 
 import java.time.LocalDate;
 
+
 public record RegisterRequest(
         @NotBlank(message = "Customer name is required")
         @Size(max = 100, message = "Customer name must not exceed 100 characters")
