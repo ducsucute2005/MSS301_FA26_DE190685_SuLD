@@ -1,3 +1,4 @@
+
 -- T-SQL (SQL Server): IDENTITY thay cho AUTO_INCREMENT, NVARCHAR de luu tieng Viet co dau
 CREATE TABLE customer (
     customer_id       BIGINT IDENTITY(1,1) PRIMARY KEY,
