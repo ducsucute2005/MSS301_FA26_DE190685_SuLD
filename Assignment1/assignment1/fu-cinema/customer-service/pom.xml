@@ -46,6 +46,7 @@
             <scope>runtime</scope>
         </dependency>
 
+
         <!-- TODO 1.2: BCryptPasswordEncoder (chi thu vien crypto, khong bat Spring Security) -->
         <dependency>
             <groupId>org.springframework.security</groupId>
