@@ -60,6 +60,13 @@ public class BookingService {
                 .toList();
     }
 
+    public List<BookingResponse> getAll() {
+        return bookingRepository.findAllByOrderByBookingDateDesc()
+                .stream()
+                .map(BookingResponse::from)
+                .toList();
+    }
+
     public BookingResponse getById(Long bookingId, Long userId, String role) {
         return BookingResponse.from(findAccessible(bookingId, userId, role));
     }

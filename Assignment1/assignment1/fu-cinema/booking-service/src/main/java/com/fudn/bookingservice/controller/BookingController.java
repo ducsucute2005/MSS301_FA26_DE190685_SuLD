@@ -10,11 +10,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/bookings")
@@ -22,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class BookingController {
 
     private static final String USER_ID = "X-User-Id";
+    private static final String USER_ROLE = "X-User-Role";
 
     private final BookingService bookingService;
 
@@ -35,5 +39,29 @@ public class BookingController {
     public BookingResponse create(@RequestHeader(USER_ID) Long userId,
                                   @Valid @RequestBody CreateBookingRequest request) {
         return bookingService.create(userId, request);
+    }
+
+    @GetMapping("/my")
+    public List<BookingResponse> getMyBookings(@RequestHeader(USER_ID) Long userId) {
+        return bookingService.getMyBookings(userId);
+    }
+
+    @GetMapping
+    public List<BookingResponse> getAll() {
+        return bookingService.getAll();
+    }
+
+    @GetMapping("/{id}")
+    public BookingResponse getById(@PathVariable Long id,
+                                   @RequestHeader(USER_ID) Long userId,
+                                   @RequestHeader(value = USER_ROLE, required = false) String role) {
+        return bookingService.getById(id, userId, role);
+    }
+
+    @PutMapping("/{id}/cancel")
+    public BookingResponse cancel(@PathVariable Long id,
+                                  @RequestHeader(USER_ID) Long userId,
+                                  @RequestHeader(value = USER_ROLE, required = false) String role) {
+        return bookingService.cancel(id, userId, role);
     }
 }
