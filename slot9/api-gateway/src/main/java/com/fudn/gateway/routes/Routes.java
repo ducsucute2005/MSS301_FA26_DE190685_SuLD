@@ -2,6 +2,7 @@ package com.fudn.gateway.routes;
 
 import org.springframework.beans.factory.annotation.Value;
 import static org.springframework.cloud.gateway.server.mvc.filter.BeforeFilterFunctions.uri;
+import static org.springframework.cloud.gateway.server.mvc.filter.FilterFunctions.setPath;
 import static org.springframework.cloud.gateway.server.mvc.handler.GatewayRouterFunctions.route;
 import static org.springframework.cloud.gateway.server.mvc.handler.HandlerFunctions.http;
 import org.springframework.context.annotation.Bean;
@@ -43,6 +44,36 @@ public class Routes {
         return route("inventory_service")
                 .route(RequestPredicates.path("/api/inventory/**"), http())
                 .before(uri(inventoryServiceUrl))
+                .build();
+    }
+
+    @Bean
+    public RouterFunction<ServerResponse> productServiceSwaggerRoute() {
+        return route("product_service_swagger")
+                .route(RequestPredicates.path("/aggregate/product-service/v3/api-docs"),
+                        http())
+                .before(uri(productServiceUrl))
+                .filter(setPath("/api-docs"))
+                .build();
+    }
+
+    @Bean
+    public RouterFunction<ServerResponse> orderServiceSwaggerRoute() {
+        return route("order_service_swagger")
+                .route(RequestPredicates.path("/aggregate/order-service/v3/api-docs"),
+                        http())
+                .before(uri(orderServiceUrl))
+                .filter(setPath("/api-docs"))
+                .build();
+    }
+
+    @Bean
+    public RouterFunction<ServerResponse> inventoryServiceSwaggerRoute() {
+        return route("inventory_service_swagger")
+                .route(RequestPredicates.path("/aggregate/inventory-service/v3/api-docs"),
+                        http())
+                .before(uri(inventoryServiceUrl))
+                .filter(setPath("/api-docs"))
                 .build();
     }
 }

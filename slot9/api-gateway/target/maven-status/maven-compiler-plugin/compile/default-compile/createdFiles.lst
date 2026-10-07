@@ -1,1 +1,3 @@
+com\fudn\gateway\config\SecurityConfig.class
 com\fudn\gateway\ApiGatewayApplication.class
+com\fudn\gateway\routes\Routes.class
