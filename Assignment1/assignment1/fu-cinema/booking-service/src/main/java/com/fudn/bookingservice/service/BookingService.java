@@ -4,6 +4,8 @@ import com.fudn.bookingservice.client.MovieClient;
 import com.fudn.bookingservice.dto.BookingItemRequest;
 import com.fudn.bookingservice.dto.BookingResponse;
 import com.fudn.bookingservice.dto.CreateBookingRequest;
+import com.fudn.bookingservice.dto.MovieRevenueResponse;
+import com.fudn.bookingservice.dto.ReportResponse;
 import com.fudn.bookingservice.dto.SeatMapResponse;
 import com.fudn.bookingservice.dto.ShowtimeResponse;
 import com.fudn.bookingservice.exception.ApiException;
@@ -20,7 +22,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -89,6 +93,39 @@ public class BookingService {
 
         booking.setBookingStatus(BookingStatus.CANCELLED);
         return BookingResponse.from(bookingRepository.save(booking));
+    }
+
+    public ReportResponse report(LocalDate startDate, LocalDate endDate) {
+        if (startDate.isAfter(endDate)) {
+            throw ApiException.badRequest("startDate must be before or equal to endDate");
+        }
+
+        List<Booking> bookings = bookingRepository.findForReport(BookingStatus.CONFIRMED,
+                startDate.atStartOfDay(), endDate.plusDays(1).atStartOfDay());
+
+        BigDecimal totalRevenue = BigDecimal.ZERO;
+        long totalTickets = 0;
+        Map<String, MovieRevenueResponse> revenueByMovie = new HashMap<>();
+
+        for (Booking booking : bookings) {
+            totalRevenue = totalRevenue.add(booking.getTotalPrice());
+            totalTickets += booking.getDetails().size();
+            for (BookingDetail detail : booking.getDetails()) {
+                revenueByMovie.merge(detail.getMovieId(),
+                        new MovieRevenueResponse(detail.getMovieId(), detail.getMovieTitle(), 1, detail.getPrice()),
+                        (current, added) -> new MovieRevenueResponse(current.movieId(), current.movieTitle(),
+                                current.ticketsSold() + added.ticketsSold(),
+                                current.revenue().add(added.revenue())));
+            }
+        }
+
+        List<MovieRevenueResponse> sortedRevenueByMovie = revenueByMovie.values().stream()
+                .sorted(Comparator.comparing(MovieRevenueResponse::revenue).reversed()
+                        .thenComparing(Comparator.comparingLong(MovieRevenueResponse::ticketsSold).reversed()))
+                .toList();
+
+        return new ReportResponse(startDate, endDate, bookings.size(), totalTickets, totalRevenue,
+                sortedRevenueByMovie, bookings.stream().map(BookingResponse::from).toList());
     }
 
     @Transactional
