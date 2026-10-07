@@ -4,6 +4,7 @@ import com.fudn.bookingservice.client.MovieClient;
 import com.fudn.bookingservice.dto.BookingItemRequest;
 import com.fudn.bookingservice.dto.BookingResponse;
 import com.fudn.bookingservice.dto.CreateBookingRequest;
+import com.fudn.bookingservice.dto.SeatMapResponse;
 import com.fudn.bookingservice.dto.ShowtimeResponse;
 import com.fudn.bookingservice.exception.ApiException;
 import com.fudn.bookingservice.model.Booking;
@@ -22,6 +23,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -34,6 +36,19 @@ public class BookingService {
     private final BookingRepository bookingRepository;
     private final BookingDetailRepository bookingDetailRepository;
     private final MovieClient movieClient;
+
+    public SeatMapResponse getSeatMap(String showtimeId) {
+        ShowtimeResponse showtime = fetchShowtime(showtimeId);
+        List<String> bookedSeats = bookingDetailRepository
+                .findSeatCodesByShowtime(showtimeId, BookingStatus.CONFIRMED)
+                .stream()
+                .sorted()
+                .toList();
+        int totalSeats = showtime.seatRows() * showtime.seatsPerRow();
+        return new SeatMapResponse(showtime.showtimeId(), showtime.movieTitle(), showtime.roomName(),
+                showtime.startTime(), showtime.seatRows(), showtime.seatsPerRow(), totalSeats,
+                totalSeats - bookedSeats.size(), bookedSeats);
+    }
 
     @Transactional
     public BookingResponse create(Long customerId, CreateBookingRequest request) {
