@@ -50,6 +50,13 @@ public class BookingService {
                 totalSeats - bookedSeats.size(), bookedSeats);
     }
 
+    public List<BookingResponse> getMyBookings(Long customerId) {
+        return bookingRepository.findByCustomerIdOrderByBookingDateDesc(customerId)
+                .stream()
+                .map(BookingResponse::from)
+                .toList();
+    }
+
     @Transactional
     public BookingResponse create(Long customerId, CreateBookingRequest request) {
         Map<String, ShowtimeResponse> showtimeCache = new HashMap<>();
