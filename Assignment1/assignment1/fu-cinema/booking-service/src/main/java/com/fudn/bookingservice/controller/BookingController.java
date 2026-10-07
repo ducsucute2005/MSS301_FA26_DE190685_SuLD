@@ -2,10 +2,12 @@ package com.fudn.bookingservice.controller;
 
 import com.fudn.bookingservice.dto.BookingResponse;
 import com.fudn.bookingservice.dto.CreateBookingRequest;
+import com.fudn.bookingservice.dto.ReportResponse;
 import com.fudn.bookingservice.dto.SeatMapResponse;
 import com.fudn.bookingservice.service.BookingService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,9 +16,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -49,6 +53,13 @@ public class BookingController {
     @GetMapping
     public List<BookingResponse> getAll() {
         return bookingService.getAll();
+    }
+
+    @GetMapping("/report")
+    public ReportResponse report(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+        return bookingService.report(startDate, endDate);
     }
 
     @GetMapping("/{id}")
