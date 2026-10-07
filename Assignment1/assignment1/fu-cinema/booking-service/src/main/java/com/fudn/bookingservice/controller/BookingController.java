@@ -1,0 +1,39 @@
+package com.fudn.bookingservice.controller;
+
+import com.fudn.bookingservice.dto.BookingResponse;
+import com.fudn.bookingservice.dto.CreateBookingRequest;
+import com.fudn.bookingservice.dto.SeatMapResponse;
+import com.fudn.bookingservice.service.BookingService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/api/bookings")
+@RequiredArgsConstructor
+public class BookingController {
+
+    private static final String USER_ID = "X-User-Id";
+
+    private final BookingService bookingService;
+
+    @GetMapping("/showtimes/{showtimeId}/seats")
+    public SeatMapResponse getSeatMap(@PathVariable String showtimeId) {
+        return bookingService.getSeatMap(showtimeId);
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public BookingResponse create(@RequestHeader(USER_ID) Long userId,
+                                  @Valid @RequestBody CreateBookingRequest request) {
+        return bookingService.create(userId, request);
+    }
+}
