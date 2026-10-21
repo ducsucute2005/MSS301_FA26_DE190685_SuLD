@@ -1,7 +1,7 @@
-package com.fudn.orderservice.repository;
+package com.mss301.order.repository;
 
-import com.fudn.orderservice.model.Order;
+import com.mss301.order.entity.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
-//repo
+
 public interface OrderRepository extends JpaRepository<Order, Long> {
 }
