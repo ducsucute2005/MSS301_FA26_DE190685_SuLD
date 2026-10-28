@@ -1,4 +1,4 @@
-package com.de190685.mediaGateway;
+package fu.de190685.gateway;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -9,5 +9,4 @@ class ApplicationTests {
 	@Test
 	void contextLoads() {
 	}
-
 }
