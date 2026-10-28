@@ -1,4 +1,4 @@
-package com.de190685.postService;
+package fu.de190685.post;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -9,5 +9,4 @@ class ApplicationTests {
 	@Test
 	void contextLoads() {
 	}
-
 }
