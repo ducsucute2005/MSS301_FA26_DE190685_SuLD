@@ -1,7 +1,10 @@
 package com.mss301.watch.entity;
 
+import com.mss301.watch.service.saga.SagaStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -34,8 +37,9 @@ public class SagaState {
     @Column(name = "WatchID")
     private Integer watchId;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "Status", length = 20)
-    private String status;
+    private SagaStatus status;
 
     @Column(name = "CurrentStep", length = 50)
     private String currentStep;
