@@ -1,7 +1,10 @@
 package com.mss301.brand.service;
 
 import com.mss301.brand.dto.AssignmentResponse;
+import com.mss301.brand.dto.BrandResponse;
+import com.mss301.brand.dto.BrandWatchesResponse;
 import com.mss301.brand.entity.BrandWatch;
+import com.mss301.brand.entity.WatchBrand;
 import com.mss301.brand.repository.BrandRepository;
 import com.mss301.brand.repository.BrandWatchRepository;
 import org.junit.jupiter.api.Test;
@@ -13,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -147,5 +151,63 @@ class BrandServiceTests {
         assertEquals("NOTHING_TO_DO", second.status());
         assertNull(second.previousBrandId());
         verify(brandWatchRepository).delete(existing);
+    }
+
+    @Test
+    void findAllIncludesWatchCountForEachBrand() {
+        WatchBrand rolex = WatchBrand.builder()
+                .brandId(1)
+                .brandName("Rolex")
+                .countryOfOrigin("Switzerland")
+                .build();
+        when(brandRepository.findAll()).thenReturn(List.of(rolex));
+        when(brandWatchRepository.countByBrandId(1)).thenReturn(2L);
+
+        List<BrandResponse> brands = brandService.findAll();
+
+        assertEquals(List.of(new BrandResponse(1, "Rolex", "Switzerland", 2)), brands);
+    }
+
+    @Test
+    void findByIdReturnsBrandAndWatchCount() {
+        WatchBrand rolex = WatchBrand.builder()
+                .brandId(1)
+                .brandName("Rolex")
+                .countryOfOrigin("Switzerland")
+                .build();
+        when(brandRepository.findById(1)).thenReturn(Optional.of(rolex));
+        when(brandWatchRepository.countByBrandId(1)).thenReturn(2L);
+
+        BrandResponse response = brandService.findById(1);
+
+        assertEquals(new BrandResponse(1, "Rolex", "Switzerland", 2), response);
+    }
+
+    @Test
+    void watchesOfReturnsSortedWatchIdsAndCount() {
+        WatchBrand rolex = WatchBrand.builder()
+                .brandId(1)
+                .brandName("Rolex")
+                .countryOfOrigin("Switzerland")
+                .build();
+        when(brandRepository.findById(1)).thenReturn(Optional.of(rolex));
+        when(brandWatchRepository.findByBrandIdOrderByWatchIdAsc(1)).thenReturn(List.of(
+                BrandWatch.builder().watchId(1).brandId(1).build(),
+                BrandWatch.builder().watchId(8).brandId(1).build()));
+
+        BrandWatchesResponse response = brandService.watchesOf(1);
+
+        assertEquals(new BrandWatchesResponse(1, "Rolex", 2, List.of(1, 8)), response);
+    }
+
+    @Test
+    void findByIdRejectsUnknownBrand() {
+        when(brandRepository.findById(999)).thenReturn(Optional.empty());
+
+        ResponseStatusException exception = assertThrows(
+                ResponseStatusException.class,
+                () -> brandService.findById(999));
+
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
     }
 }
