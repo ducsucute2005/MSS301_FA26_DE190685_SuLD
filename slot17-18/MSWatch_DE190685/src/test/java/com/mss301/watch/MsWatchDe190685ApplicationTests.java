@@ -1,4 +1,4 @@
-package com.MSWatch_DE190685;
+package com.mss301.watch;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
