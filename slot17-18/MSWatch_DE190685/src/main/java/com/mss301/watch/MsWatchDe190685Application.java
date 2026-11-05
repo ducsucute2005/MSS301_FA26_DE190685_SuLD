@@ -1,4 +1,4 @@
-package com.MSWatch_DE190685;
+package com.mss301.watch;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
