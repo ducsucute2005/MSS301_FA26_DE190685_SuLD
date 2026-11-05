@@ -44,4 +44,24 @@ public class BrandService {
                 previousBrandId);
         return new AssignmentResponse(watchId, brandId, previousBrandId, "ASSIGNED");
     }
+
+    @Transactional
+    public AssignmentResponse unassignWatch(Integer watchId) {
+        return brandWatchRepository.findByWatchId(watchId)
+                .map(existing -> {
+                    Integer previousBrandId = existing.getBrandId();
+                    brandWatchRepository.delete(existing);
+                    log.info(
+                            "[SAGA-PARTICIPANT] UNASSIGN watch={} from brand={}",
+                            watchId,
+                            previousBrandId);
+                    return new AssignmentResponse(watchId, null, previousBrandId, "UNASSIGNED");
+                })
+                .orElseGet(() -> {
+                    log.info(
+                            "[SAGA-PARTICIPANT] UNASSIGN watch={} -> nothing to do (idempotent)",
+                            watchId);
+                    return new AssignmentResponse(watchId, null, null, "NOTHING_TO_DO");
+                });
+    }
 }

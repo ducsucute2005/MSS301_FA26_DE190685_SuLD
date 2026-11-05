@@ -16,6 +16,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -101,5 +102,50 @@ class BrandServiceTests {
         assertEquals("Brand not found with id: 999", exception.getReason());
         verify(brandWatchRepository, never()).findByWatchId(99);
         verify(brandWatchRepository, never()).save(org.mockito.ArgumentMatchers.any());
+    }
+
+    @Test
+    void unassignsWatchAndReturnsPreviousBrand() {
+        BrandWatch existing = BrandWatch.builder()
+                .id(7L)
+                .watchId(99)
+                .brandId(2)
+                .build();
+        when(brandWatchRepository.findByWatchId(99)).thenReturn(Optional.of(existing));
+
+        AssignmentResponse response = brandService.unassignWatch(99);
+
+        assertEquals(new AssignmentResponse(99, null, 2, "UNASSIGNED"), response);
+        verify(brandWatchRepository).delete(existing);
+    }
+
+    @Test
+    void unassignsMissingWatchAsNothingToDo() {
+        when(brandWatchRepository.findByWatchId(99)).thenReturn(Optional.empty());
+
+        AssignmentResponse response = brandService.unassignWatch(99);
+
+        assertEquals(new AssignmentResponse(99, null, null, "NOTHING_TO_DO"), response);
+        verify(brandWatchRepository, never()).delete(org.mockito.ArgumentMatchers.any());
+    }
+
+    @Test
+    void repeatedUnassignIsIdempotent() {
+        BrandWatch existing = BrandWatch.builder()
+                .id(7L)
+                .watchId(99)
+                .brandId(2)
+                .build();
+        when(brandWatchRepository.findByWatchId(99))
+                .thenReturn(Optional.of(existing), Optional.empty());
+
+        AssignmentResponse first = brandService.unassignWatch(99);
+        AssignmentResponse second = brandService.unassignWatch(99);
+
+        assertEquals("UNASSIGNED", first.status());
+        assertEquals(2, first.previousBrandId());
+        assertEquals("NOTHING_TO_DO", second.status());
+        assertNull(second.previousBrandId());
+        verify(brandWatchRepository).delete(existing);
     }
 }
