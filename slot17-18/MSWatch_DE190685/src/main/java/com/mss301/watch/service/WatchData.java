@@ -1,5 +1,6 @@
 package com.mss301.watch.service;
 
+import com.mss301.watch.dto.WatchRequest;
 import com.mss301.watch.entity.Watch;
 
 import java.math.BigDecimal;
@@ -30,6 +31,21 @@ public record WatchData(
             watch.getPrice(),
             watch.getReleaseDate(),
             watch.getStock()
+        );
+    }
+
+    public static WatchData from(WatchRequest request, Integer watchId) {
+        return new WatchData(
+            watchId,
+            request.getName(),
+            request.getCategoryId(),
+            request.getBrandId(),
+            request.getCaseMaterial(),
+            request.getStrapMaterial(),
+            request.getWaterpMaterial(),
+            request.getPrice(),
+            request.getReleaseDate(),
+            request.getStock()
         );
     }
 }
